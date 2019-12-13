@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: myApp
+  cloud:
+    consul:
+      host: ${CONSUL_HOST}
+      discovery:
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}${random.value}
+        deregister: false
+        health-check-critical-timeout: 30s
+        query-passing: true
+      config:
+        enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
+  cache:
+    cache-names: javacache
+    caffeine:
+      spec: maximumSize=1000,expireAfterAccess=600s
+
+logging:
+  register-shutdown-hook: true
+  level:
+    com.netflix.config: ERROR
