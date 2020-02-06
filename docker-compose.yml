@@ -1,8 +1,27 @@
 version: '3.7'
 
 services:
-  backend-server:
-    build: .
-    network_mode: bridge
+  consul:
+    image: consul
+    ports:
+      - 8500:8500
+
+  backend:
+    build:
+      context: ./backend
+    deploy:
+      replicas: 1
     environment:
-      - CONSUL_HOST=172.17.0.2
+      - CONSUL_HOST=consul
+    depends_on:
+      - consul
+
+  client:
+    build:
+      context: ./client
+    environment:
+      - CONSUL_HOST=consul
+    depends_on:
+      - consul
+    ports:
+    - 8090:8090

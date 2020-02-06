@@ -1,0 +1,22 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: myClient
+  cloud:
+    consul:
+      host: ${CONSUL_HOST}
+      discovery:
+        query-passing: true
+        deregister: false
+        instance-id: ${spring.application.name}_id_${random.value}
+    service-registry:
+
+
+logging:
+  register-shutdown-hook: true
+  level:
+    com:
+      netflix:
+        config: ERROR

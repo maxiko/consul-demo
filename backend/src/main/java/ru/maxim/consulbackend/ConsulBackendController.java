@@ -1,4 +1,4 @@
-package ru.maxim.consuldemo;
+package ru.maxim.consulbackend;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -11,8 +11,8 @@ import java.net.UnknownHostException;
 
 @RestController
 @RefreshScope
-public class ConsulDemoController {
-    @Value("${prop:null}")
+public class ConsulBackendController {
+    @Value("${prop:defaultvalue}")
     String value;
 
     @GetMapping("/")
