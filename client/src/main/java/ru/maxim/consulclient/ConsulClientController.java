@@ -25,30 +25,36 @@ import java.util.List;
 public class ConsulClientController {
 
     private final DiscoveryClient discoveryClient;
-    private LoadBalancerClient loadBalancer;
+    private final LoadBalancerClient loadBalancer;
 
     public ConsulClientController(DiscoveryClient discoveryClient, LoadBalancerClient loadBalancer) {
         this.discoveryClient = discoveryClient;
         this.loadBalancer = loadBalancer;
     }
 
-    @GetMapping("/getHostname")
-    public String getHostname(){
-        String result = "";
+    public String doRequest(String serviceId, String uri){
         final CloseableHttpClient httpClient = HttpClients.createDefault();
-        ServiceInstance instance = loadBalancer.choose("MyBackend");
-        URI requestUri = URI.create(String.format("http://%s:%s/hostname",instance.getHost(),instance.getPort()));
+        ServiceInstance instance = loadBalancer.choose(serviceId);
+        URI requestUri = URI.create(String.format("http://%s:%s%s",instance.getHost(),instance.getPort(),uri));
         HttpGet request = new HttpGet(requestUri);
         try {
             CloseableHttpResponse response = httpClient.execute(request);
             HttpEntity entity = response.getEntity();
-            if (entity != null){
-                result = EntityUtils.toString(entity);
-            }
+            if (entity != null) return EntityUtils.toString(entity);
         }catch (IOException e){
             return e.getMessage();
         }
-        return result;
+        return null;
+    }
+
+    @GetMapping("/getHostname")
+    public String getHostname(){
+        return doRequest("MyBackend","/hostname");
+    }
+
+    @GetMapping("/getConfigFromValue")
+    public String getConfigFromValue(){
+        return doRequest("MyBackend","/getConfigFromValue");
     }
 
     @GetMapping(value = "/getAppAddresses", produces = "application/json")
